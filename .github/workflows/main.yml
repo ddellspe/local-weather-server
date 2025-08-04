@@ -1,0 +1,26 @@
+name: Main build
+
+on:
+  push:
+    branches:
+      - main
+    pull_request:
+
+jobs:
+  test-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Prepare Python for Tests
+        run: |
+          python -m venv venv
+          venv/bin/pip install .
+          venv/bin/pip install -r requirements-dev.txt
+      - name: Run Python Tests
+        run: |
+          venv/bin/coverage erase
+          venv/bin/coverage run -m pytest
+          venv/bin/coverage report
