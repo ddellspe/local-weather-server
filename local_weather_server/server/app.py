@@ -6,10 +6,12 @@ from typing import NoReturn
 
 import flask
 
+from local_weather_server.server.servlets.awn import awn
 from local_weather_server.server.servlets.wunderground import wunderground
 
 app = flask.Flask('local weather server')
 app.register_blueprint(wunderground)
+app.register_blueprint(awn)
 
 
 def main(argv: Sequence[str] | None = None) -> NoReturn:
