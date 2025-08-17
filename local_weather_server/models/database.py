@@ -52,7 +52,6 @@ class WeatherData(NamedTuple):
         UV: str,
         absbaromin: str,
         baromin: str,
-        *args: str,
         **kwargs: str,
     ) -> WeatherData:
         timezone = kwargs.get('timezone', 'UTC')
@@ -93,4 +92,65 @@ class WeatherData(NamedTuple):
             wind_direction=float(winddir),
             solar_radiation=float(solarradiation),
             uv_index=int(UV),
+        )
+
+    @classmethod
+    def from_awn_request(
+        cls,
+        dateutc: str,
+        PASSKEY: str,
+        tempf: str,
+        humidity: str,
+        windspeedmph: str,
+        windgustmph: str,
+        winddir: str,
+        uv: str,
+        solarradiation: str,
+        hourlyrainin: str,
+        dailyrainin: str,
+        weeklyrainin: str,
+        monthlyrainin: str,
+        yearlyrainin: str,
+        baromrelin: str,
+        baromabsin: str,
+        **kwargs: str,
+    ) -> WeatherData:
+        timezone = kwargs.get('timezone', 'UTC')
+        tz = zoneinfo.ZoneInfo(key=timezone)
+        if dateutc == 'now':
+            timestamp = datetime.datetime.now(tz)
+        else:
+            timestamp = datetime.datetime.strptime(
+                dateutc, '%Y-%m-%d %H:%M:%S',
+            ).replace(tzinfo=tz)
+        temperature = float(tempf)
+        relative_humidity = float(humidity)
+        wind_speed = float(windspeedmph)
+        dew_pt = dew_pointf(
+            temperature=temperature,
+            humidity=relative_humidity,
+        )
+        feels_lk = feels_like(
+            temperature=temperature,
+            humidity=relative_humidity, wind_speed=wind_speed,
+        )
+        return WeatherData(
+            timestamp=timestamp,
+            weather_station=WeatherStation(identifier=PASSKEY, timezone=tz),
+            temperature=temperature,
+            humidity=relative_humidity,
+            dew_point=round(dew_pt, 1),
+            feels_like=round(feels_lk, 1),
+            absolute_pressure=float(baromabsin),
+            relative_pressue=float(baromrelin),
+            rainfall_rate=float(hourlyrainin),
+            daily_rain=float(dailyrainin),
+            weekly_rain=float(weeklyrainin),
+            monthly_rain=float(monthlyrainin),
+            yearly_rain=float(yearlyrainin),
+            wind_speed=wind_speed,
+            wind_gust_speed=float(windgustmph),
+            wind_direction=float(winddir),
+            solar_radiation=float(solarradiation),
+            uv_index=int(uv),
         )
