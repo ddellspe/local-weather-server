@@ -6,12 +6,14 @@ from unittest import mock
 import pytest
 
 from local_weather_server.server.app import app
+from local_weather_server.server.app import AppContext
 from testing.utilities.client import Client
 
 
 class LocalWeatherServer:
-    def __init__(self, client):
+    def __init__(self, client, sandbox):
         self.client = client
+        self.sandbox = sandbox
 
 
 @contextlib.contextmanager
@@ -32,6 +34,7 @@ def _in_testing_app_context(application):
 
 
 @pytest.fixture
-def server():
+def server(sandbox):
     with _patch_app_with_client(app), _in_testing_app_context(app) as client:
-        yield LocalWeatherServer(client)
+        with mock.patch.object(AppContext, 'database_path', sandbox.db_path):
+            yield LocalWeatherServer(client, sandbox)
