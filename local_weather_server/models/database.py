@@ -9,7 +9,7 @@ from local_weather_server.utils.calculators import feels_like
 
 
 class WeatherStation(NamedTuple):
-    identifier: str
+    id: str
     timezone: datetime.tzinfo | None = None
 
 
@@ -21,7 +21,7 @@ class WeatherData(NamedTuple):
     dew_point: float
     feels_like: float
     absolute_pressure: float
-    relative_pressue: float
+    relative_pressure: float
     rainfall_rate: float
     daily_rain: float
     weekly_rain: float
@@ -57,7 +57,7 @@ class WeatherData(NamedTuple):
         timezone = kwargs.get('timezone', 'UTC')
         tz = zoneinfo.ZoneInfo(key=timezone)
         if dateutc == 'now':
-            timestamp = datetime.datetime.now(tz)
+            timestamp = datetime.datetime.now(tz).replace(microsecond=0)
         else:
             timestamp = datetime.datetime.strptime(
                 dateutc, '%Y-%m-%d %H:%M:%S',
@@ -75,13 +75,13 @@ class WeatherData(NamedTuple):
         )
         return WeatherData(
             timestamp=timestamp,
-            weather_station=WeatherStation(identifier=ID, timezone=tz),
+            weather_station=WeatherStation(id=ID, timezone=tz),
             temperature=temperature,
             humidity=relative_humidity,
             dew_point=round(dew_pt, 1),
             feels_like=round(feels_lk, 1),
             absolute_pressure=float(absbaromin),
-            relative_pressue=float(baromin),
+            relative_pressure=float(baromin),
             rainfall_rate=float(rainin),
             daily_rain=float(dailyrainin),
             weekly_rain=float(weeklyrainin),
@@ -118,7 +118,7 @@ class WeatherData(NamedTuple):
         timezone = kwargs.get('timezone', 'UTC')
         tz = zoneinfo.ZoneInfo(key=timezone)
         if dateutc == 'now':
-            timestamp = datetime.datetime.now(tz)
+            timestamp = datetime.datetime.now(tz).replace(microsecond=0)
         else:
             timestamp = datetime.datetime.strptime(
                 dateutc, '%Y-%m-%d %H:%M:%S',
@@ -136,13 +136,13 @@ class WeatherData(NamedTuple):
         )
         return WeatherData(
             timestamp=timestamp,
-            weather_station=WeatherStation(identifier=PASSKEY, timezone=tz),
+            weather_station=WeatherStation(id=PASSKEY, timezone=tz),
             temperature=temperature,
             humidity=relative_humidity,
             dew_point=round(dew_pt, 1),
             feels_like=round(feels_lk, 1),
             absolute_pressure=float(baromabsin),
-            relative_pressue=float(baromrelin),
+            relative_pressure=float(baromrelin),
             rainfall_rate=float(hourlyrainin),
             daily_rain=float(dailyrainin),
             weekly_rain=float(weeklyrainin),
